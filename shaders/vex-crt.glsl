@@ -36,8 +36,8 @@
 #define APERTURE_GRILLE_STRENGTH 0.3
 #define APERTURE_GRILLE_PERIOD 2.0
 
-// Flicker
-#define FLICKER_STRENGTH 0.015
+// Flicker (disabled — applied to .rgb only so sigil compositing stays correct)
+#define FLICKER_STRENGTH 0.0
 #define FLICKER_FREQUENCY 15.0
 
 // Noise
@@ -58,7 +58,8 @@
 
 // Rotating sigil watermark
 #define SIGIL_SPEED 0.02
-#define SIGIL_COLOR vec3(0.35, 0.30, 0.03)
+#define SIGIL_BRIGHTNESS 0.01
+#define SIGIL_COLOR (SIGIL_BRIGHTNESS * vec3(0.35, 0.30, 0.03))
 #define SIGIL_SCALE 0.38
 
 
@@ -801,8 +802,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     fragColor.rgb *= 1.0 - APERTURE_GRILLE_STRENGTH*apertureGrilleMask;
 
-    // Flicker
-    fragColor *= 1.0 - FLICKER_STRENGTH/2.0*(1.0 + sin(2.0*PI*FLICKER_FREQUENCY*iTime));
+    // Flicker (rgb only — preserves alpha for sigil compositing)
+    fragColor.rgb *= 1.0 - FLICKER_STRENGTH/2.0*(1.0 + sin(2.0*PI*FLICKER_FREQUENCY*iTime));
 
     // Noise
     float noise = smoothstep(0.4, 0.6, gold_v2_noise(fragCoord.xy, fract(iTime*0.001)));
@@ -816,9 +817,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         vec3 bloomSample = bloomSamples[i];
         vec4 neighbor = texture(iChannel0, uv + bloomSample.xy * step);
         float luminance = 0.299 * neighbor.r + 0.587 * neighbor.g + 0.114 * neighbor.b;
-        fragColor += luminance * bloomSample.z * neighbor * BLOOM_STRENGTH;
+        fragColor.rgb += luminance * bloomSample.z * neighbor.rgb * BLOOM_STRENGTH;
     }
-    fragColor = clamp(fragColor, 0.0, 1.0);
+    fragColor.rgb = clamp(fragColor.rgb, 0.0, 1.0);
 #endif
 
     // Rotating sigil watermark (SDF texture)
@@ -836,7 +837,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     // Composite sigil behind terminal text, then apply window opacity
     fragColor = vec4(
-        fragColor.rgb * fragColor.a + sigBg * (1.0 - fragColor.a),
+        fragColor.rgb + sigBg,
         BACKGROUND_OPACITY
     );
 }
