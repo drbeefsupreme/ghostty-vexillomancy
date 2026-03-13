@@ -36,8 +36,8 @@
 #define APERTURE_GRILLE_STRENGTH 0.3
 #define APERTURE_GRILLE_PERIOD 2.0
 
-// Flicker (disabled — applied to .rgb only so sigil compositing stays correct)
-#define FLICKER_STRENGTH 0.0
+// Flicker
+#define FLICKER_STRENGTH 0.1
 #define FLICKER_FREQUENCY 15.0
 
 // Noise
@@ -58,7 +58,7 @@
 
 // Rotating sigil watermark
 #define SIGIL_SPEED 0.02
-#define SIGIL_BRIGHTNESS 0.01
+#define SIGIL_BRIGHTNESS 0.005
 #define SIGIL_COLOR (SIGIL_BRIGHTNESS * vec3(0.35, 0.30, 0.03))
 #define SIGIL_SCALE 0.38
 
