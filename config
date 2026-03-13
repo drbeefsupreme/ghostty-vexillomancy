@@ -75,5 +75,5 @@ palette = 14=#c8a050
 palette = 15=#f0e8c0
 
 # CRT Shader for that retro terminal look
-custom-shader = ghostty-shaders/supreme-crt.glsl
+custom-shader = shaders/vex-crt.glsl
 keybind = ctrl+r=reload_config
